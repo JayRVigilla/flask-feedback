@@ -2,7 +2,7 @@
 from flask import Flask, jsonify, request, render_template, redirect, session, flash
 from flask_bcrypt import Bcrypt
 import bcrypt
-from flask_debugtoolbar import DebugToolbarExtension
+# from flask_debugtoolbar import DebugToolbarExtension
 from models import db, connect_db, User, Feedback
 from forms import AddUserForm, LoginForm, FeedbackForm
 
@@ -21,12 +21,31 @@ app.config['SECRET_KEY'] = "I'LL NEVER TELL!!"
 #
 # app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 
-toolbar = DebugToolbarExtension(app)
+# toolbar = DebugToolbarExtension(app)
+
+
+def check_session_user():
+    """ Boolean response after checking if current is authorized.
+    Current user can only edit their own user data
+    """
+    if session['user_username'] not in session:
+        flash("You must be logged in")
+        return False
+    return True
+
+
+def same_user(username, msg, redirect_url):
+    """ ensures logged in user is authorized to edit """
+    if session['user_username'] != username:
+        flash(msg)
+        return redirect(redirect_url)
+    else:
+        return True
 
 
 @app.route("/")
 def homepage():
-    """Show homepage with links to site areas."""
+    """ Show homepage with links to site areas. """
 
     return redirect("/register")
 
@@ -165,6 +184,30 @@ def show_update_feedback_form(feedback_id):
     # TODO jay: come back through and make this a function taking
     # flash message and redirect
     previous = Feedback.query.get_or_404(feedback_id)
+
+    """  playing around with making functions for checking if user
+    is logged in, user is editing their own data
+     """
+    # if check_session_user():
+    #     if same_user(previous.username,
+    #                  "You can\'t edit someone else\'s feedback", '/'):
+    #         form = FeedbackForm(obj=previous)
+
+    #         if form.validate_on_submit():
+    #             title = form.title.data
+    #             content = form.content.data
+
+    #             previous.title = title
+    #             previous.content = content
+
+    #             db.session.commit()
+    #             return redirect(f'/users/{previous.username}')
+
+    #         else:
+    #             return render_template('edit_feedback.html', form=form)
+    # else:
+    #     flash("You must be logged in")
+    #     return redirect("/login")
 
     if "user_username" not in session:
         flash("You must be logged in to give feedback! Put your name on it!")

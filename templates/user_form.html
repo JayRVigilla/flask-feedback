@@ -5,26 +5,30 @@ Add User Form
 {% endblock %}
 
 {% block content %}
-<h2>Add a User</h2>
+<div>
+  <h2>Add a User</h2>
+  <span>
+    <form method="POST">
+      {{form.hidden_tag()}}
 
-<form method="POST">
-  {{form.hidden_tag()}}
-
-  {% for field in form 
+      {% for field in form 
               if field.widget.input_type != 'hidden' %}
       <p>
         {{field.label}}
         {{field}}
         {% for error in field.errors %}
-          {{error}}
+        {{error}}
         {% endfor %}
       </p>
-  {% endfor %}
+      {% endfor %}
 
-  <button type="submit">Add User</button>
-</form>
+      <button type="submit">Add User</button>
+    </form>
+  </span>
 
-<h4>login</h4>
-<a class="btn btn-primary" href="/users/login">Log In</a>
-
+  <span>
+    <h3>User Login</h4>
+      <a class="btn btn-primary" href="/login">Log In</a>
+  </span>
+</div>
 {% endblock %}
